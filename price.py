@@ -11,6 +11,12 @@ CHANNEL_ID = -100123456789
 # CoinCap API URL for Bitcoin
 COINCAP_API_URL = "https://api.coincap.io/v2/assets/bitcoin"
 
+# Pyrogram client setup
+app = Client(
+    "bitcoin_price_bot",
+    bot_token=BOT_TOKEN,
+)
+
 # Function to get Bitcoin prices
 def get_bitcoin_price():
     try:
@@ -22,12 +28,6 @@ def get_bitcoin_price():
         print(f"Error getting Bitcoin price: {e}")
         return None
 
-# Pyrogram client setup
-app = Client(
-    "bitcoin_price_bot",
-    bot_token=BOT_TOKEN,
-)
-
 # Function to update channel description
 def update_channel_description():
     bitcoin_price = get_bitcoin_price()
@@ -38,7 +38,6 @@ def update_channel_description():
         except Exception as e:
             print(f"Error updating channel description: {e}")
 
-# Main loop to update every 5 minutes
-while True:
-    update_channel_description()
-    time.sleep(300)  # 5 minutes
+# Start the Pyrogram client
+if __name__ == "__main__":
+    app.run(update_channel_description, interval=300)  # 5 minutes
