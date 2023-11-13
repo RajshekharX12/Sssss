@@ -1,6 +1,7 @@
 import time
 import requests
 from pyrogram import Client
+from pyrogram import filters
 
 # Your Telegram Bot Token
 BOT_TOKEN = "YOUR_BOT_TOKEN"
@@ -29,15 +30,17 @@ def get_bitcoin_price():
         return None
 
 # Function to update channel description
-def update_channel_description():
+async def update_channel_description():
     bitcoin_price = get_bitcoin_price()
     if bitcoin_price:
         try:
-            app.set_chat_description(CHANNEL_ID, bitcoin_price)
+            await app.set_chat_description(CHANNEL_ID, bitcoin_price)
             print(f"Channel description updated: {bitcoin_price}")
         except Exception as e:
             print(f"Error updating channel description: {e}")
 
-# Start the Pyrogram client
+# Run the Pyrogram client
 if __name__ == "__main__":
-    app.run(update_channel_description, interval=300)  # 5 minutes
+    app.start()
+    app.add_message_handler(update_channel_description, filters.command(["update"]))
+    app.idle()
