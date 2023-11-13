@@ -6,13 +6,21 @@ from pyrogram import Client
 BOT_TOKEN = "YOUR_BOT_TOKEN"
 
 # Your Telegram Channel ID (replace with your channel ID)
-CHANNEL_ID = -1001981505834
+CHANNEL_ID = -100123456789
 
-# CoinCap API URL for Bitcoin
-COINCAP_API_URL = "https://api.coincap.io/v2/assets/bitcoin"
+# Abstract API URL for Bitcoin exchange rates
+ABSTRACT_API_URL = "https://exchange-rates.abstractapi.com/v1/live/?api_key=YOUR_ABSTRACT_API_KEY&base=USD&target=BTC"
 
-# Your CoinCap API Key
-YOUR_API_KEY = "b94ef818-83e3-40fd-af2d-3834db10e473"
+# Function to get Bitcoin exchange rate
+def get_bitcoin_exchange_rate():
+    try:
+        response = requests.get(ABSTRACT_API_URL)
+        data = response.json()
+        bitcoin_rate = data["exchange_rates"]["BTC"]
+        return f"BTC Exchange Rate: {bitcoin_rate}"
+    except Exception as e:
+        print(f"Error getting Bitcoin exchange rate: {e}")
+        return None
 
 # Pyrogram client setup
 app = Client(
@@ -20,30 +28,17 @@ app = Client(
     bot_token=BOT_TOKEN,
 )
 
-# Function to get Bitcoin prices
-def get_bitcoin_price():
-    headers = {"Authorization": f"Bearer {YOUR_API_KEY}"}
-    try:
-        response = requests.get(COINCAP_API_URL, headers=headers)
-        data = response.json()
-        bitcoin_price = data["data"]["priceUsd"]
-        return f"BTC ${bitcoin_price}"
-    except Exception as e:
-        print(f"Error getting Bitcoin price: {e}")
-        return None
-
 # Function to update channel description
-async def update_channel_description():
-    bitcoin_price = get_bitcoin_price()
-    if bitcoin_price:
+def update_channel_description():
+    bitcoin_exchange_rate = get_bitcoin_exchange_rate()
+    if bitcoin_exchange_rate:
         try:
-            await app.set_chat_description(CHANNEL_ID, bitcoin_price)
-            print(f"Channel description updated: {bitcoin_price}")
+            app.set_chat_description(CHANNEL_ID, bitcoin_exchange_rate)
+            print(f"Channel description updated: {bitcoin_exchange_rate}")
         except Exception as e:
             print(f"Error updating channel description: {e}")
 
-# Run the Pyrogram client
-if __name__ == "__main__":
-    app.start()
-    app.add_message_handler(update_channel_description, filters.command(["update"]))
-    app.idle()
+# Main loop to update every 5 minutes
+while True:
+    update_channel_description()
+    time.sleep(300)  # 5 minutes
