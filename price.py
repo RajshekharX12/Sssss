@@ -8,16 +8,19 @@ BOT_TOKEN = "YOUR_BOT_TOKEN"
 # Your Telegram Channel ID (replace with your channel ID)
 CHANNEL_ID = -100123456789
 
-# Abstract API URL for Bitcoin exchange rates
-ABSTRACT_API_URL = "https://exchange-rates.abstractapi.com/v1/live/?api_key=YOUR_ABSTRACT_API_KEY&base=USD&target=BTC"
+# Abstract API URL for exchange rates
+ABSTRACT_API_URL = "https://exchange-rates.abstractapi.com/v1/live"
 
-# Function to get Bitcoin exchange rate
-def get_bitcoin_exchange_rate():
+# Your Abstract API Key
+ABSTRACT_API_KEY = "YOUR_ABSTRACT_API_KEY"
+
+# Function to get exchange rates
+def get_exchange_rate():
     try:
-        response = requests.get(ABSTRACT_API_URL)
+        response = requests.get(f"{ABSTRACT_API_URL}/?api_key={ABSTRACT_API_KEY}&base=USD&target=EUR")
         data = response.json()
-        bitcoin_rate = data["exchange_rates"]["BTC"]
-        return f"BTC Exchange Rate: {bitcoin_rate}"
+        exchange_rate = data["exchange_rates"]["EUR"]
+        return f"Bitcoin Exchange Rate: 1 BTC = {exchange_rate} EUR"
     except Exception as e:
         print(f"Error getting Bitcoin exchange rate: {e}")
         return None
@@ -30,11 +33,11 @@ app = Client(
 
 # Function to update channel description
 def update_channel_description():
-    bitcoin_exchange_rate = get_bitcoin_exchange_rate()
-    if bitcoin_exchange_rate:
+    exchange_rate = get_exchange_rate()
+    if exchange_rate:
         try:
-            app.set_chat_description(CHANNEL_ID, bitcoin_exchange_rate)
-            print(f"Channel description updated: {bitcoin_exchange_rate}")
+            app.set_chat_description(CHANNEL_ID, exchange_rate)
+            print(f"Channel description updated: {exchange_rate}")
         except Exception as e:
             print(f"Error updating channel description: {e}")
 
