@@ -1,16 +1,18 @@
 import time
 import requests
 from pyrogram import Client
-from pyrogram import filters
 
 # Your Telegram Bot Token
 BOT_TOKEN = "YOUR_BOT_TOKEN"
 
 # Your Telegram Channel ID (replace with your channel ID)
-CHANNEL_ID = -100123456789
+CHANNEL_ID = -1001981505834
 
 # CoinCap API URL for Bitcoin
 COINCAP_API_URL = "https://api.coincap.io/v2/assets/bitcoin"
+
+# Your CoinCap API Key
+YOUR_API_KEY = "b94ef818-83e3-40fd-af2d-3834db10e473"
 
 # Pyrogram client setup
 app = Client(
@@ -20,8 +22,9 @@ app = Client(
 
 # Function to get Bitcoin prices
 def get_bitcoin_price():
+    headers = {"Authorization": f"Bearer {YOUR_API_KEY}"}
     try:
-        response = requests.get(COINCAP_API_URL)
+        response = requests.get(COINCAP_API_URL, headers=headers)
         data = response.json()
         bitcoin_price = data["data"]["priceUsd"]
         return f"BTC ${bitcoin_price}"
